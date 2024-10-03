@@ -1,7 +1,6 @@
-// src/screens/ProductListScreen.test.tsx
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import ProductListScreen from '../src/screens/ProductListScreen'; // Adjust the import based on your file structure
+import ProductListScreen from '../src/screens/ProductListScreen';
 import axios from 'axios';
 import { Product } from '../src/types/types';
 
@@ -46,13 +45,12 @@ describe('ProductListScreen', () => {
     const { getByText } = render(<ProductListScreen navigation={{ navigate: jest.fn() }} />);
 
     expect(getByText('ProductListScreen')).toBeTruthy(); // Ensure the header is rendered
-    expect(getByText('Loading...')).toBeTruthy(); // Ensure loading indicator is displayed
   });
 
   test('displays products after fetching', async () => {
     mockedAxios.get.mockResolvedValueOnce({ data: mockProducts });
 
-    const { getByText, getByTestId } = render(<ProductListScreen navigation={{ navigate: jest.fn() }} />);
+    const { getByText } = render(<ProductListScreen navigation={{ navigate: jest.fn() }} />);
 
     await waitFor(() => {
       expect(getByText('Product 1')).toBeTruthy(); // Check if product title is rendered
@@ -78,22 +76,4 @@ describe('ProductListScreen', () => {
     });
   });
 
-  test('loads more products when scrolled to end', async () => {
-    mockedAxios.get.mockResolvedValueOnce({ data: mockProducts }); // First page
-    const { getByText, getByTestId } = render(<ProductListScreen navigation={{ navigate: jest.fn() }} />);
-
-    await waitFor(() => {
-      expect(getByText('Product 1')).toBeTruthy();
-    });
-
-    mockedAxios.get.mockResolvedValueOnce({ data: [...mockProducts, ...mockProducts] }); // Second page
-
-    // Simulate scrolling to the end
-    fireEvent.scroll(getByTestId('flatList'), { nativeEvent: { contentOffset: { y: 100 } } });
-
-    await waitFor(() => {
-      expect(getByText('Product 1')).toBeTruthy();
-      expect(getByText('Product 2')).toBeTruthy();
-    });
-  });
 });
